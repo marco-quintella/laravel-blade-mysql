@@ -1,76 +1,60 @@
----
-title: Laravel 13 Blade MySQL Starter
-description: Laravel 13 blade starter with MySQL — deploy in one click on Railway. Zero-config, migrations on deploy, FrankenPHP.
-tags:
-  - php
-  - laravel 13
-  - blade
-  - mysql
----
+# Deploy and Host Laravel 13 Blade MySQL on Railway
 
-# Laravel 13 Blade MySQL Starter
+Laravel 13.37 (16 October 2026) Blade starter with MySQL. One click provisions the database, injects `DB_URL`, runs migrations, and serves the app with FrankenPHP.
 
-**Laravel 13 + Blade + MySQL** — a clean, production-ready Laravel starter that deploys on Railway in one click. No configuration needed: the MySQL database is provisioned automatically and migrations run on every deploy.
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/template/JL9ADu?referralCode=2Sbs5r)
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/JL9ADu?referralCode=2Sbs5r)
+## About Hosting Laravel 13 Blade MySQL
 
-## ✨ Why use this template?
+Railpack builds this repo on PHP 8.4 and starts FrankenPHP with the document root at `public`. The start script runs `php artisan migrate --force` before the server listens. Railway's healthcheck is `GET /up`.
 
-- 🚀 **Laravel 13** — the latest stable release, running on PHP 8.4+ with [FrankenPHP](https://frankenphp.dev/)
-- 🎨 **Blade + Tailwind CSS 4 + Vite** — modern frontend tooling, no build step to configure
-- 🗄️ **MySQL included** — Railway provisions the database automatically and injects the connection string (`DB_URL`)
-- ⚙️ **Zero-config deploy** — database migrations run automatically on every deploy via Railpack
-- 🛡️ **Secure defaults** — healthcheck at `/up`, restart policy, and logs to stdout
-- 📦 **Minimal** — just the skeleton you need to start building your app
+The MySQL service is part of the template. Its connection string is wired to `DB_URL`. If the wizard also sets `DB_CONNECTION=sqlite` (the skeleton default), a present `DB_URL` still selects MySQL. `ext-pdo_mysql` is required in `composer.json`, so Railpack installs the driver even when `DB_CONNECTION` is not `mysql`.
 
-## Deploy and Host
+## Why Deploy Laravel 13 Blade MySQL on Railway?
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/JL9ADu?referralCode=2Sbs5r)
+- October 2026 framework: Laravel 13.37, PHP 8.4, Vite 8.3, Tailwind CSS 4.3.
+- MySQL is provisioned with the app. No manual connection form.
+- Migrations run on every deploy and are safe to repeat.
+- `GET /up` is the healthcheck. Logs from the start script go to the deploy logs.
 
-Click the button above to deploy this template on [Railway](https://railway.com). Railway will provision a MySQL database, connect it to your app, run the migrations, and give you a public URL — in about 2 minutes.
+## Common Use Cases
 
-### What you get
+- Start a Blade app that already talks to MySQL on Railway.
+- Confirm a production deploy path before adding auth, queues, or your own routes.
+- Fork the skeleton and keep the `DB_URL` connection rule.
+
+## Dependencies for Laravel 13 Blade MySQL Hosting
+
+### Deployment Dependencies
+
+- Laravel 13.37 and PHP 8.4
+- MySQL 9 (the template service). `DB_URL` is `${{MySQL.MYSQL_PUBLIC_URL}}`
+- FrankenPHP, installed by Railpack
+- Vite 8.3 and Tailwind CSS 4.3, built during the Railpack install
+
+## What you get
 
 | Service | Description |
 |---|---|
-| Laravel 13 app | Blade starter served by FrankenPHP |
-| MySQL | Managed database, auto-connected via `DB_URL` |
+| Laravel 13.37 app | Blade starter served by FrankenPHP |
+| MySQL 9 | Managed database, connected via `DB_URL` |
 
-## 🚀 Local Development
+## Local development
 
 ```bash
 cp .env.example .env
 composer install
 npm install
 npm run build
+php artisan key:generate
 php artisan serve
 ```
 
-## 📝 Notes
+Without `DB_URL`, the app uses SQLite. Set `DB_URL` to a MySQL URL when you want the same connection the template uses.
 
-- **Database**: Laravel auto-selects MySQL when `DB_URL` is set (falls back to SQLite for local dev).
-- **Migrations**: Run automatically on every deploy (idempotent).
-- **Healthcheck**: `/up` route (registered in `bootstrap/app.php`).
-- **Logging**: Logs go to stdout, viewable via `railway logs`.
+## Notes
 
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Database**: `config/database.php` uses MySQL whenever `DB_URL` is set, including when `DB_CONNECTION` is `sqlite`.
+- **Migrations**: run on every deploy.
+- **Healthcheck**: `/up`, registered in `bootstrap/app.php`.
+- **Logging**: the start script prints migration output to the deploy logs (`railway logs`).
